@@ -68,7 +68,7 @@ class IdiotCrack:
 def help():
     """
     help:
-        Fournit une liste d'arguments accompagnée d'explications
+        Fournit une liste d'arguments accompagnée d'explications.
     """
     print "List of command\n"
 
