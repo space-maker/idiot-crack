@@ -27,12 +27,14 @@ class IdiotCrack:
     alpha_numeric = [str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
         [chr(97 + i) for i in xrange(26)]
     
-    def __init__(self, target="http://127.0.0.1", dico=alpha_numeric, extremum=(1, 6)):
+    def __init__(self, target="http://127.0.0.1", dico=alpha_numeric, extremum=(5, 6)):
         self.settarget(target)
         self.setdico(dico)
         self.setextremum(extremum)
         
         self.stopwhen("")
+
+        self._post_data = ""
         
     def settarget(self, target):
         self._target = target
@@ -49,6 +51,9 @@ class IdiotCrack:
     def stopwhen(self, expr):
         self._stop_when = expr
 
+    def setpostdata(self, data):
+        self._post_data = data
+
     def run(self):
         
         # Initialisation des instances
@@ -60,10 +65,11 @@ class IdiotCrack:
             print '\033c'
             os.system("clear")
             print tmp
-            tmp = b.go_next()
-            send_data.send_data({"frm_login": "admin", "frm_password": tmp})
-            if re.match(self._stop_when, send_data.get_response()):
+            send_data.send_data(self._post_data + tmp, True)
+            if re.search(self._stop_when, send_data.get_response()):
                 print("Success with", tmp)  
+                break
+            tmp = b.go_next()
 
 def help():
     """
@@ -74,7 +80,7 @@ def help():
 
 def main():
     """ Script """
-    list_argv = dict(getopt.getopt(sys.argv[1:], "hvt:d:r:")[0])
+    list_argv = dict(getopt.getopt(sys.argv[1:], "hvt:d:e:r:", ["data="])[0])
     
     # Demande de la liste des commandes
     if '-h' in list_argv:
@@ -95,8 +101,12 @@ def main():
         with open(list_argv["-d"], 'r') as dico_read_only:
             idc.setdico(sorted(list(set(dico_read_only.read()))))
 
+    if "-e" in list_argv:
+        extremum = list_argv["-e"].split(',')
+        idc.setextremum((int(extremum[0]), int(extremum[1])))
+
     if '-r' in list_argv:
-        idc.stopwhen(list_argv["-s"])
+        idc.stopwhen(list_argv["-r"])
 
     idc.run()
 
