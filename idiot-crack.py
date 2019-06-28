@@ -7,7 +7,6 @@ import getopt
 import re
 from bruteforce import *
 from sendform import * 
-#test
 
 class IdiotCrack:
     """
@@ -74,13 +73,32 @@ class IdiotCrack:
 def help():
     """
     help:
-        Fournit une liste d'arguments accompagnée d'explications.
+        Fournit une liste d'arguments accompagnée 
+        d'explications.
     """
-    print "List of command\n"
+    print "Liste des commandes\n"
+    
+    print "-h:\tAffiche la liste des commandes."
+    
+    print "-v\tActive la verbosité du programme."
+    
+    print ("-t\tPermet de spécifier la cible respectant l'uri HTTP \
+(pas de gestion de HTTPS).")
+
+    print "-d\tPar défaut, le programme teste toutes les possibilités \
+alpha-numériques.Pour spécifier votre propre liste de symboles, vous \
+pouvez l'indiquer par cette commande."
+
+    print "-e\tPar défaut, le programme teste toutes les possiblités \
+de la liste des symboles d'une taille de 5 à 6. Pour changer cette taille \
+il suffit d'écire 'min,max' en argument, avec min et max deux entiers."
+
+    print "-r\tPar défaut, le programme s'arrête tout de suite. L'arrêt \
+s'effectue par une condition regex qui est testé sur la page de \
+l'application web reçue après l'envoi d'une requête."
 
 def main():
     """ Script """
-    print "\tRunning idiot_crack..."
     list_argv = dict(getopt.getopt(sys.argv[1:], "hvt:d:e:r:", ["data="])[0])
     
     # Demande de la liste des commandes
