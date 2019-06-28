@@ -7,7 +7,7 @@ import getopt
 import re
 from bruteforce import *
 from sendform import * 
-
+#test
 
 class IdiotCrack:
     """
