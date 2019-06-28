@@ -80,6 +80,7 @@ def help():
 
 def main():
     """ Script """
+    print "\tRunning idiot_crack..."
     list_argv = dict(getopt.getopt(sys.argv[1:], "hvt:d:e:r:", ["data="])[0])
     
     # Demande de la liste des commandes
