@@ -27,29 +27,34 @@ class Bruteforce:
 
         word_tmp = self._word
         
-        for i in range(0, len(self._word)):
+        for i in xrange(len(self._word)):
             self._word_index[i] += 1
             
+            # Gestion de la dernière lettre
             if i == (len(self._word) - 1):
+                # Pour le cas particulier où la taille maximum vaut 1 
+                if len(self._word) == 1 and self._is_finish():
+                    self._word = None
+                elif self._check_last_term(i): 
+                    self._word_index = [0] * self._max
+                    self._word = self._list_of_term[0] * (len(self._word) + 1)
+                    break
+                else:
+                    self._word = self._word[:-1] + self._list_of_term[self._word_index[i]] 
+                    break
+            # Gestion de la première lettre
+            elif i == 0:
                 if self._check_last_term(i):
                     if self._is_finish():
                         self._word = None
                         break
                     else:
-                        self._word_index = [0] * self._max
-                        self._word = self._list_of_term[0] * (len(self._word) + 1)
-                        break
-                else:
-                    self._word = self._word[:-1] + self._list_of_term[self._word_index[i]] 
-                    break
-
-            elif i == 0:
-                if self._check_last_term(i):
-                    self._word_index[i] = 0
-                    self._word = self._list_of_term[0] + self._word[1:]
+                        self._word_index[i] = 0
+                        self._word = self._list_of_term[0] + self._word[1:]
                 else:
                     self._word = self._list_of_term[self._word_index[i]] + self._word[1:]
-                    break
+                    break 
+
             else:
                 if self._check_last_term(i):
                     self._word_index[i] = 0
@@ -64,7 +69,13 @@ class Bruteforce:
     def _check_last_term(self, i):
         return self._word[i] == self._list_of_term[-1]
 
-    def _is_finish(self):
-        len(self._word) == self._max and self._list_of_term[-1] * self._max == self._word 
+    def _is_finish(self): 
+        return len(self._word) == self._max and self._list_of_term[-1] * self._max == self._word 
 
 
+if __name__ == "__main__":
+    b = Bruteforce(['a', 'b', 'c'], (2, 6)) 
+    tmp = b.go_next()
+    while tmp != None:
+        print tmp
+        tmp = b.go_next()
