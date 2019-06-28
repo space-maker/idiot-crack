@@ -2,7 +2,6 @@
 # *-* coding: utf8 *-*
 
 import sys
-import os
 import getopt
 import re
 from bruteforce import *
@@ -61,8 +60,6 @@ class IdiotCrack:
 
         tmp = b.go_next()
         while tmp != None:
-            print '\033c'
-            os.system("clear")
             print tmp
             send_data.send_data(self._post_data + tmp, True)
             if re.search(self._stop_when, send_data.get_response()):
@@ -96,16 +93,29 @@ il suffit d'écire 'min,max' en argument, avec min et max deux entiers."
     print "-r\tPar défaut, le programme s'arrête tout de suite. L'arrêt \
 s'effectue par une condition regex qui est testé sur la page de \
 l'application web reçue après l'envoi d'une requête."
-
+    
+    print "-g\t Génère une liste de possibilités alpha-numériques\
+d'une taille comprise entre 1 et 8 inclue."
 def main():
     """ Script """
-    list_argv = dict(getopt.getopt(sys.argv[1:], "hvt:d:e:r:", ["data="])[0])
+    list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:e:r:", ["data="])[0])
     
     # Demande de la liste des commandes
     if '-h' in list_argv:
         help()
         sys.exit()
     
+    # Demande de génération des possibilités alpha-numériques
+
+    b = Bruteforce(IdiotCrack.alpha_numeric, (1, 8))
+    
+    tmp = b.go_next()
+    while tmp != None:
+        print tmp
+        tmp = b.go_next()
+
+    sys.exit()
+
     # Début du programme
 
     idc = IdiotCrack()
