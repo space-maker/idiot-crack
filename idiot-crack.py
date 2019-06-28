@@ -78,7 +78,7 @@ def help():
     """
     print "Liste des commandes\n"
     
-    print "-h:\tAffiche la liste des commandes."
+    print "-h\tAffiche la liste des commandes."
     
     print "-v\tActive la verbosité du programme."
     
