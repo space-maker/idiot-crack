@@ -19,8 +19,8 @@ class Sendform:
         self._c.setopt(self._c.WRITEDATA, self._buffer)
         
 
-    def send_data(self, data_list):
-        self._c.setopt(self._c.POSTFIELDS, urlencode(data_list))
+    def send_data(self, data_list, is_encode = False):
+        self._c.setopt(self._c.POSTFIELDS, urlencode(data_list) if not is_encode else data_list)
         self._c.perform()
     
     def get_response(self):
