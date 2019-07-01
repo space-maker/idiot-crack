@@ -19,9 +19,17 @@ class Bruteforce:
         self._word = list_of_term[0] * self._min
     
     def set_term(self, list_of_term):
+        """
+        set_term:
+            Fixe la liste des symboles
+        """
         self._list_of_term = list_of_term
 
     def go_next(self):
+        """
+        go_next:
+            renvoie la prochaine combinaison possible et calcule la suivante
+        """
         if self._word == None:
             return None
 
@@ -65,6 +73,8 @@ class Bruteforce:
 
         return word_tmp
 
+    def numberofpossibilities(self):
+        return int((len(self._list_of_term) ** (self._max + 1) - len(self._list_of_term) ** self._min) // (len(self._list_of_term) - 1))
 
     def _check_last_term(self, i):
         return self._word[i] == self._list_of_term[-1]
@@ -74,8 +84,16 @@ class Bruteforce:
 
 
 if __name__ == "__main__":
-    b = Bruteforce(['a', 'b', 'c'], (2, 6)) 
+    import time
+    b = Bruteforce(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'], (2, 6)) 
     tmp = b.go_next()
-    while tmp != None:
-        print tmp
+    s = 0
+
+    start = time.time()
+    while tmp != None and (time.time() - start) <= 5.000:
+        #print tmp
         tmp = b.go_next()
+        s += 1
+    print "pos ", b.numberofpossibilities() 
+    print "vit ", s/5 
+    print "req ", s
