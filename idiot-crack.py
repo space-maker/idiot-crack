@@ -107,14 +107,15 @@ def main():
     
     # Demande de génération des possibilités alpha-numériques
 
-    b = Bruteforce(IdiotCrack.alpha_numeric, (1, 8))
+    if '-g' in list_argv:
+        b = Bruteforce(IdiotCrack.alpha_numeric, (1, 8))
     
-    tmp = b.go_next()
-    while tmp != None:
-        print tmp
         tmp = b.go_next()
+        while tmp != None:
+            print tmp
+            tmp = b.go_next()
 
-    sys.exit()
+        sys.exit()
 
     # Début du programme
 
