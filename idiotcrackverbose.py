@@ -58,6 +58,8 @@ class IdiotCrackVerbose:
         self._stdscr.clear()
         self._stdscr.addstr(0, 0, "Requetes restantes  " + str(request_left))
         self._stdscr.addstr(1, 0, "Requete / seconde   " + str(request_speed))
+        tmp = str(request_left // request_speed) if request_speed != 0 else '?' 
+        self._stdscr.addstr(2, 0, "Temps restants      " + tmp)
 
         self._stdscr.refresh()
 
