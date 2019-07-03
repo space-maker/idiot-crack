@@ -6,6 +6,8 @@ import getopt
 import re
 from bruteforce import *
 from sendform import * 
+from idiotcrackverbose import IdiotCrackVerbose
+from time import time
 
 class IdiotCrack:
     """
@@ -22,7 +24,8 @@ class IdiotCrack:
         les autorisations requises pour ce type d'audit.
     """
 
-    alpha_numeric = [str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
+    alpha_numeric = [
+str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
         [chr(97 + i) for i in xrange(26)]
     
     def __init__(self, target="http://127.0.0.1", dico=alpha_numeric, extremum=(5, 6)):
@@ -33,6 +36,8 @@ class IdiotCrack:
         self.stopwhen("")
 
         self._post_data = ""
+        
+        self.setverbose(False)
         
     def settarget(self, target):
         self._target = target
@@ -53,17 +58,36 @@ class IdiotCrack:
         self._post_data = data
 
     def run(self):
-        
         # Initialisation des instances
         b = Bruteforce(self._dico, self._extremum)
         send_data = Sendform(self._target)
+        
+        if self._verbose:
+            total_combination = b.numberofpossibilities()       
+            total_combination_fixed = total_combination
+            speed = 0
 
+            idc_verbose = IdiotCrackVerbose("Idiot Crack", "version 1.0 alpha", "Programme de penetration de systemes d'authentification basiques")        
+            idc_verbose.displayresume(total_combination)
+            idc_verbose.initrun()
+        
+        start_bruteforce = time()
         tmp = b.go_next()
         while tmp != None:
-            print tmp
+            # print tmp
+            if self._verbose: 
+                total_combination -= 1
+                if (time() - start_bruteforce) > 5.0:
+                    speed = int((total_combination_fixed - total_combination) / (time() - start_bruteforce))
+                idc_verbose.displayonerun(total_combination, total_combination_fixed, speed)
+
             send_data.send_data(self._post_data + tmp, True)
+
+
             if re.search(self._stop_when, send_data.get_response()):
-                print("Success with", tmp)  
+                if self._verbose:
+                    idc_verbose.close()
+                print("Success with " + tmp)  
                 break
             tmp = b.go_next()
 
@@ -101,7 +125,7 @@ def main():
     list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:e:r:", ["data="])[0])
     
     # Demande de la liste des commandes
-    if '-h' in list_argv:
+    if '-h' in list_argv or list_argv == {}:
         help()
         sys.exit()
     
@@ -129,7 +153,8 @@ def main():
 
     if '-d' in list_argv:
         with open(list_argv["-d"], 'r') as dico_read_only:
-            idc.setdico(sorted(list(set(dico_read_only.read()))))
+            idc.setdico(list(set(dico_read_only.read())))
+            #idc.setdico(sorted(list(set(dico_read_only.read()))))
 
     if "-e" in list_argv:
         extremum = list_argv["-e"].split(',')
@@ -137,6 +162,9 @@ def main():
 
     if '-r' in list_argv:
         idc.stopwhen(list_argv["-r"])
+
+    if "--data" in list_argv:
+        idc.setpostdata(list_argv["--data"])
 
     idc.run()
 

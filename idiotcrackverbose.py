@@ -54,23 +54,55 @@ class IdiotCrackVerbose:
         
         return True
 
-    def displayonerun(self, request_left, request_speed):
+    def initrun(self):
         self._stdscr.clear()
-        self._stdscr.addstr(0, 0, "Requetes restantes  " + str(request_left))
-        self._stdscr.addstr(1, 0, "Requete / seconde   " + str(request_speed))
-        tmp = str(request_left // request_speed) if request_speed != 0 else '?' 
-        self._stdscr.addstr(2, 0, "Temps restants      " + tmp)
+
+        self._stdscr.addstr(0, 0, "Requetes restantes  ")
+        self._stdscr.addstr(1, 0, "Requetes / seconde  ")
+        self._stdscr.addstr(2, 0, "Temps restants      ") 
+        
+        self._stdscr.addstr(3, 0, '[')
+        for i in xrange(20):
+            self._stdscr.addstr(3, i + 1, '.')
+
+        self._stdscr.addstr(3, 21, ']') 
+        
+        self._stdscr.addstr(3, 22, " 0 %") 
+    
+    def requestleftupdate(self, request_left):
+        self._stdscr.move(0, 21)
+        self._stdscr.clrtoeol()
+
+        self._stdscr.addstr(0, 21, str(request_left))
+
+    def requestspeedupdate(self, request_speed):
+        self._stdscr.move(1, 21)
+        self._stdscr.clrtoeol()
+
+        self._stdscr.addstr(1, 21, str(request_speed))
+    
+    def requesttimeleftupdate(self, request_left, request_speed):
+        self._stdscr.move(2, 21)
+        self._stdscr.clrtoeol()
+
+        self._stdscr.addstr(2, 21, (str(request_left // request_speed) if request_speed != 0 else '?')) 
+
+    def progressionbarupdate(self, percent):
+        for i in xrange(percent // 5):
+            self._stdscr.addstr(3, i + 1, '=')
+        
+        self._stdscr.addstr(3, 22, ' ' + str(percent) + " %") 
+
+    def displayonerun(self, request_left, request_total, request_speed):
+        self.requestleftupdate(request_left)
+        self.requestspeedupdate(request_speed)
+        self.requesttimeleftupdate(request_left, request_speed)
+        self.progressionbarupdate(((request_total - request_left) * 100) // request_total) 
 
         self._stdscr.refresh()
 
     def waitkey(self):
         self._stdscr.getch()
-
-    def refresh(self):
-        pass
-    
-    def _insertline(self, y, x, line):
-        pass
 
     def __del__(self):
         self.close()
