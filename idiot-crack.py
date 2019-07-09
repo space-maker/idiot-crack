@@ -8,6 +8,7 @@ from bruteforce import *
 from sendform import * 
 from idiotcrackverbose import IdiotCrackVerbose
 from time import time
+from random import shuffle
 
 class IdiotCrack:
     """
@@ -60,6 +61,9 @@ str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
 
     def setpostdata(self, data):
         self._post_data = data
+
+    def shuffle(self):
+        shuffle(self._dico) if self._dico is not None else shuffle(self._symbol)
 
     def _rundico(self):
         send_data = Sendform(self._target)
@@ -149,6 +153,10 @@ def help():
 alpha-numériques.Pour spécifier votre propre liste de symboles, vous \
 pouvez l'indiquer par cette commande."
 
+    print "-d\tVous pouvez indiquer une liste de mots à tester\
+directement sans passer par la génération de mots par liste de\
+symboles."
+
     print "-e\tPar défaut, le programme teste toutes les possiblités \
 de la liste des symboles d'une taille de 5 à 6. Pour changer cette taille \
 il suffit d'écire 'min,max' en argument, avec min et max deux entiers."
@@ -161,7 +169,7 @@ l'application web reçue après l'envoi d'une requête."
 d'une taille comprise entre 1 et 8 inclue."
 def main():
     """ Script """
-    list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:s:e:r:", ["data="])[0])
+    list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:s:e:r:", ["data=", "random"])[0])
     
     # Demande de la liste des commandes
     if '-h' in list_argv or list_argv == {}:
@@ -207,6 +215,9 @@ def main():
 
     if "--data" in list_argv:
         idc.setpostdata(list_argv["--data"])
+
+    if "--random" in list_argv:
+        idc.shuffle()
 
     idc.run()
 
