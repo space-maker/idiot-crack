@@ -20,4 +20,4 @@ Si il n'y a pas d'erreurs Python, le programme est à priori fonctionnel.
 
 Pour avoir davantages d'informations sur les commandes disponibles, faites `./idiot-crack -h` pour avoir une liste avec des explications pour chaque argument disponible.
 ## Améliorations et corrections
-Tous types d'aide est la bienvenue :). Ce programme n'est nullement un vrai outil de pentesting, simplement un outil d'entraînement de test rapide.
+Tout type d'aide est la bienvenue :). Ce programme n'est nullement un vrai outil de pentesting, simplement un outil d'entraînement de test rapide.
